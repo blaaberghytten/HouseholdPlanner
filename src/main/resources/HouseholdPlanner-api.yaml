@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: House Hold Planner API
+  description: This is the API Documentation for Household Planner. Household Planner is a Planning application to help planing Meals and Shopping for a household.
+  termsOfService: http://example.com/terms/
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/blaaberghytten/HHP_API_OAS3.0/1.0.0
+    
+paths:
+#  /api/v1/auth/signin:
+#    post:
+#      summary: signin of user
+#      operationId: signinUser
+#      tags: 
+#        - auth
+#      
+#  /api/v1/auth/signout:
+#    post:
+#      summary: signout of user
+#      operationId: signoutUser
+#      tags: 
+#        - auth
+
+  /api/v1/users:
+    get:
+      summary: List all users
+      operationId: listUsers
+      tags:
+        - users
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: A paged array of users
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/user/{email}:
+    post:
+      summary: Invite a new user
+      operationId: createUsers
+      tags:
+        - users
+      parameters:
+        - name: email
+          in: path
+          description: Email of the user to be invited
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/user{userId}:
+    get:
+      tags:
+        - users
+      summary: Info for a specific user
+      operationId: showUserById
+      parameters:
+        - name: userId
+          in: path
+          description: The id of the user to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Info for a specific user
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: user id not found.
+        500:
+          description: Internal error.
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - users
+      summary: Update a specific user
+      operationId: updateUserById
+      parameters:
+        - name: userId
+          in: path
+          description: The id of the user to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: New user data values to set
+        content: 
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/User" 
+      responses:
+        200:
+          description: The updated user
+          content:
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: user id not found.
+        500:
+          description: Internal error.
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - users
+      summary: Delete a specific user
+      operationId: deleteUserById
+      parameters:
+        - name: userId
+          in: path
+          description: The id of the user to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: User deleted
+        404:
+          description: user id not found.
+        500:
+          description: Internal error.
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components: 
+  schemas:
+    UserStatus:
+      type: string
+      description: Possible user states
+      enum:
+        - invited
+        - active
+        - suspended
+    User:
+      type: object
+      properties:
+        id:
+          description: Unique id for the user assigned by the database
+          type: integer
+          format: int64
+        username:
+          description: Unique name identifying the user, is chosen by the user at registration
+          type: string
+        password:
+          description: Secret code used during login , is chosen by the user at registration
+          type: string
+        email:
+          description: Email adress of the user, specifyed by administrator when the user is invited
+          type: string
+        status:
+          $ref: '#/components/schemas/UserStatus'
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        values:
+          type: array
+          items:
+            type: string
+
+
+#security: 
+
+tags:
+  - name: users
+    description: Everything about your Users
+
+
+#externalDocs:
