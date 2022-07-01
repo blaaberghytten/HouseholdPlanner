@@ -57,13 +57,13 @@ paths:
           content:
             application/json:    
               schema:
-                $ref: "#/components/schemas/Users"
+                $ref: "#/components/schemas/UsersDTO"
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDTO"
   /api/v1/user/{email}:
     post:
       summary: Invite a new user
@@ -85,7 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDTO"
   /api/v1/user{userId}:
     get:
       tags:
@@ -105,7 +105,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserDTO'
         404:
           description: user id not found.
         500:
@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDTO"
     put:
       tags:
         - users
@@ -133,14 +133,14 @@ paths:
         content: 
           "application/json":
             schema:
-              $ref: "#/components/schemas/User" 
+              $ref: "#/components/schemas/UserDTO"
       responses:
         200:
           description: The updated user
           content:
             "application/json":
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserDTO'
         404:
           description: user id not found.
         500:
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDTO"
     delete:
       tags:
         - users
@@ -175,17 +175,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDTO"
 components: 
   schemas:
-    UserStatus:
+    UserStatusDTO:
       type: string
       description: Possible user states
       enum:
         - invited
         - active
         - suspended
-    User:
+    ERoleDTO:
+      type: string
+      description: Possible user roles
+      enum:
+        - guest
+        - user
+        - admin
+    RoleDTO:
+      type: object
+      properties:
+        id:
+          description: Unique id for the role
+          type: integer
+          format: int64
+        name:
+          $ref: '#/components/schemas/ERoleDTO'
+    UserDTO:
       type: object
       properties:
         id:
@@ -202,12 +218,17 @@ components:
           description: Email adress of the user, specifyed by administrator when the user is invited
           type: string
         status:
-          $ref: '#/components/schemas/UserStatus'
-    Users:
+          $ref: '#/components/schemas/UserStatusDTO'
+        roles:
+          description: Roles assigned to the user
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDTO'
+    UsersDTO:
       type: array
       items:
-        $ref: '#/components/schemas/User'
-    Error:
+        $ref: '#/components/schemas/UserDTO'
+    ErrorDTO:
       type: object
       required:
         - code

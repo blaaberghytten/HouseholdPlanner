@@ -3,3 +3,14 @@
 
 # Ignore Gradle build output directory
 build
+
+# Generated files
+**/generated/
+
+###################
+## IntelliJ IDEA ##
+###################
+
+.idea/
+out/
+*.iml
